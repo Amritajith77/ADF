@@ -1,0 +1,9 @@
+{
+	"name": "adfdatafactory8591",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "529efa56-116e-44d4-a1ae-21db6303eb47",
+		"tenantId": "76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61"
+	}
+}
