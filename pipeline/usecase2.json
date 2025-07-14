@@ -24,7 +24,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Copy_from_blob_to_datalake_folder3",
+						"activity": "Data_flow_from_blob_to_datalake",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -44,158 +44,11 @@
 				}
 			},
 			{
-				"name": "Copy_from_blob_to_datalake_folder1",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Set start_time",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "BinarySource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "BinaryReadSettings"
-						}
-					},
-					"sink": {
-						"type": "BinarySink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "usecase2_blob",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "Copy_from_blob_to_datalake_folder2",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy_from_blob_to_datalake_folder1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "BinarySource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "BinaryReadSettings"
-						}
-					},
-					"sink": {
-						"type": "BinarySink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "usecase2_blob",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "Copy_from_blob_to_datalake_folder3",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy_from_blob_to_datalake_folder2",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "BinarySource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "BinaryReadSettings"
-						}
-					},
-					"sink": {
-						"type": "BinarySink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "usecase2_blob",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
 				"name": "Fail Message",
 				"type": "Fail",
 				"dependsOn": [
 					{
-						"activity": "Copy_from_blob_to_datalake_folder1",
-						"dependencyConditions": [
-							"Failed"
-						]
-					},
-					{
-						"activity": "Copy_from_blob_to_datalake_folder2",
-						"dependencyConditions": [
-							"Failed"
-						]
-					},
-					{
-						"activity": "Copy_from_blob_to_datalake_folder3",
+						"activity": "Data_flow_from_blob_to_datalake",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -205,6 +58,37 @@
 				"typeProperties": {
 					"message": "Copy activity failed",
 					"errorCode": "1"
+				}
+			},
+			{
+				"name": "Data_flow_from_blob_to_datalake",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Set start_time",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dataflow2",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
 				}
 			}
 		],
