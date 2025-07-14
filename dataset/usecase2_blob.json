@@ -1,0 +1,18 @@
+{
+	"name": "usecase2_blob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "2016_Medals.csv",
+				"container": "usecase2"
+			}
+		}
+	}
+}
