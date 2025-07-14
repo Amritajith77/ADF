@@ -86,12 +86,6 @@
 						"referenceName": "usecase2_blob",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "datalake1",
-						"type": "DatasetReference"
-					}
 				]
 			},
 			{
@@ -137,12 +131,6 @@
 						"referenceName": "usecase2_blob",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "datalake2",
-						"type": "DatasetReference"
-					}
 				]
 			},
 			{
@@ -186,12 +174,6 @@
 				"inputs": [
 					{
 						"referenceName": "usecase2_blob",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "datalake3",
 						"type": "DatasetReference"
 					}
 				]
