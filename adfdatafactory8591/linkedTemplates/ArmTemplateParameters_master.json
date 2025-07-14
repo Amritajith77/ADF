@@ -11,8 +11,20 @@
 		"AzureDataLakeStorage1_accountKey": {
 			"value": ""
 		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://adfdatalake85915.dfs.core.windows.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "dbserver8591.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "adfdatabase8591"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "amrita"
 		},
 		"containerUri": {
 			"value": ""
