@@ -1,0 +1,17 @@
+[
+  {
+    "TankID": "TK1",
+    "TankCapacity_Liters": 5000,
+    "ReorderLevel_Liters": 1000
+  },
+  {
+    "TankID": "TK2",
+    "TankCapacity_Liters": 4000,
+    "ReorderLevel_Liters": 800
+  },
+  {
+    "TankID": "TK3",
+    "TankCapacity_Liters": 3000,
+    "ReorderLevel_Liters": 600
+  }
+]
