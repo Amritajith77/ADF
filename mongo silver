@@ -1,0 +1,66 @@
+from pymongo import MongoClient
+import pandas as pd
+
+# MongoDB connection
+uri = "mongodb+srv://jyotirmay21comp:0xBAI6jbqpkjBLaA@cluster0.bz6rh4q.mongodb.net/PetroleumIndustry?retryWrites=true&w=majority"
+client = MongoClient(uri)
+
+# Load fuelTransaction
+txn_data = list(client["PetroleumIndustry"]["fuelTransaction"].find())
+txn_df = pd.DataFrame(txn_data)
+
+# Load fuelTankReference
+tank_data = list(client["PetroleumIndustry"]["fuelTankReference"].find())
+tank_df = pd.DataFrame(tank_data)
+
+# Drop MongoDB _id columns if needed
+txn_df['_id'] = txn_df['_id'].astype(str)
+tank_df['_id'] = tank_df['_id'].astype(str)
+
+# Convert to Spark
+spark_txn_df = spark.createDataFrame(txn_df)
+spark_tank_df = spark.createDataFrame(tank_df)
+
+display(spark_txn_df)
+display(spark_tank_df)
+#####
+joined_df = spark_txn_df.join(spark_tank_df, on="TankID", how="left")
+display(joined_df)
+######
+from pyspark.sql.functions import col, when, lit
+
+# Add PricePerLiter
+transformed_df = joined_df.withColumn(
+    "PricePerLiter",
+    col("AmountCollected") / col("VolumeSold_Liters")
+)
+
+# Add RecordStatus based on validations
+transformed_df = transformed_df.withColumn(
+    "RecordStatus",
+    when(col("VolumeSold_Liters") < 0, "NegativeSales")
+    .when(col("VolumeSold_Liters") == 0, "ZeroVolume")
+    .when(col("FuelType").isNull(), "NullFuelType")
+    .when(~col("FuelType").isin("Diesel", "Petrol"), "InvalidFuelType")
+    .when(col("TransactionDate") > lit("2025-07-19"), "FutureTransaction")
+    .when(col("TankLevel_PostTxn") > col("TankCapacity_Liters"), "TankLevelIncreased")
+    .when((col("AmountCollected") / col("VolumeSold_Liters")) > 300, "AbnormalPrice")
+    .when(col("TankLevel_PostTxn") < col("ReorderLevel_Liters"), "LowInventory")
+    .otherwise("Valid")
+)
+
+display(transformed_df)
+####
+valid_df = transformed_df.filter(col("RecordStatus") == "Valid")
+invalid_df = transformed_df.filter(col("RecordStatus") != "Valid")
+
+print(f"✅ Valid: {valid_df.count()} rows")
+print(f"❌ Invalid: {invalid_df.count()} rows")
+###
+valid_records = valid_df.toPandas().to_dict(orient="records")
+invalid_records = invalid_df.toPandas().to_dict(orient="records")
+
+client["PetroleumIndustry"]["cleanedTransactions"].insert_many(valid_records)
+client["PetroleumIndustry"]["flaggedTransactions"].insert_many(invalid_records)
+
+print("✅ Data exported back to MongoDB successfully.")
