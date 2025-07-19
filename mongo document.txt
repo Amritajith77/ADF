@@ -1,0 +1,75 @@
+%pip install pymongo[srv]
+%restart_python
+
+from pymongo import MongoClient
+import pandas as pd
+
+# Replace with your credentials
+username = "jyotirmay21comp"
+password = "0xBAI6jbqpkjBLaA"
+dbname = "PetroleumIndustry"
+collection_name = "fuelTransaction"
+
+# URL-encode special characters in password if needed
+uri = f"mongodb+srv://jyotirmay21comp:0xBAI6jbqpkjBLaA@cluster0.bz6rh4q.mongodb.net/{dbname}?retryWrites=true&w=majority"
+
+
+# Connect to MongoDB Atlas
+client = MongoClient(uri)
+collection = client[dbname][collection_name]
+
+# Read all documents into a list of dicts
+data = list(collection.find())
+
+import pandas as pd
+
+# Convert ObjectId to string in the data
+for record in data:
+    if '_id' in record:
+        record['_id'] = str(record['_id'])
+
+# Convert to Spark DataFrame (via Pandas if needed)
+df = spark.createDataFrame(pd.DataFrame(data))
+
+display(df)
+
+# Rename the column
+df_renamed = df.withColumnRenamed("StationID", "s_no")
+
+# Show the result
+display(df_renamed)
+# Convert PySpark DataFrame to Pandas DataFrame
+pandas_df = df_renamed.toPandas()
+
+# Convert to dictionary records
+records = pandas_df.to_dict(orient="records")
+import datetime
+
+# Generate a dynamic collection name using timestamp or any logic
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+dynamic_collection_name = f"fuelTransaction_{timestamp}"
+
+# Insert into the dynamically named collection
+new_collection = client["PetroleumIndustry"][dynamic_collection_name]
+new_collection.insert_many(records)
+
+print(f"✅ Data inserted into collection: {dynamic_collection_name}")
+
+
+# Step 1: Rename the column
+df = df.withColumnRenamed("StationID", "station_no")
+
+# Step 2: Convert Spark DataFrame to Pandas DataFrame, then to list of dicts
+updated_data = df.toPandas().to_dict(orient='records')
+
+# Step 3: Overwrite the collection
+collection.delete_many({})  # Clear existing documents
+collection.insert_many(updated_data)  # Insert updated documents
+
+df.printSchema()
+df.show()
+updated_data = df.toPandas().to_dict(orient='records')
+print(updated_data[:2])  # Print first 2 records to verify
+print(client.list_database_names())
+print(client[dbname].list_collection_names())
+
